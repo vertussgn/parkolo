@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Parkoló rendszer</title>
+</head>
+<body>
+<h1>Parkolóhelyek</h1>
+
+<!-- Lista megjelenítés -->
+<ul id="spot-list"></ul>
+
+<h2>Új parkolóhely hozzáadása</h2>
+<form id="add-form">
+    <label>Rendszám:
+        <input type="text" id="licensePlate" required>
+    </label>
+    <br>
+    <label>Foglalt:
+        <input type="checkbox" id="occupied">
+    </label>
+    <br>
+    <button type="submit">Hozzáadás</button>
+</form>
+
+<script>
+    // Meglévő parkolóhelyek lekérése és megjelenítése
+    function fetchSpots() {
+        fetch('/api/spots')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('spot-list');
+                list.innerHTML = '';
+                data.forEach(spot => {
+                    const li = document.createElement('li');
+                    li.textContent = `${spot.licensePlate} - ${spot.occupied ? 'Foglalt' : 'Szabad'}`;
+                    list.appendChild(li);
+                });
+            });
+    }
+
+    fetchSpots(); // betöltéskor meghívjuk
+
+    // Új parkolóhely hozzáadása
+    document.getElementById('add-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const licensePlate = document.getElementById('licensePlate').value;
+        const occupied = document.getElementById('occupied').checked;
+
+        fetch('/api/spots', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                licensePlate,
+                occupied
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+            document.getElementById('add-form').reset();
+            fetchSpots();
+        });
+    });
+</script>
+</body>
+</html>
