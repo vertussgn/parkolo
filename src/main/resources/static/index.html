@@ -5,29 +5,26 @@
     <title>Parkoló rendszer</title>
 </head>
 <body>
-<h1>Parkolóhelyek</h1>
+<h1>Parkoló Helyek</h1>
 
-<!-- Lista megjelenítés -->
 <ul id="spot-list"></ul>
 
-<h2>Új parkolóhely hozzáadása</h2>
+<h2>Új autó hozzáadása</h2>
 <form id="add-form">
-    <label>Rendszám:
-        <input type="text" id="licensePlate" required>
-    </label>
+    <label for="licensePlate">Rendszám:</label>
+    <input type="text" id="licensePlate" name="licensePlate" required>
     <br>
-    <label>Foglalt:
-        <input type="checkbox" id="occupied">
-    </label>
-    <br>
+    <label for="occupied">Foglalt?</label>
+    <input type="checkbox" id="occupied" name="occupied">
+    <br><br>
     <button type="submit">Hozzáadás</button>
 </form>
 
 <script>
-    // Meglévő parkolóhelyek lekérése és megjelenítése
-    function fetchSpots() {
+    // Összes parkolóhely lekérése
+    function loadSpots() {
         fetch('/api/spots')
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
                 const list = document.getElementById('spot-list');
                 list.innerHTML = '';
@@ -39,13 +36,11 @@
             });
     }
 
-    fetchSpots(); // betöltéskor meghívjuk
+    // Új autó hozzáadása
+    document.getElementById('add-form').addEventListener('submit', function (event) {
+        event.preventDefault();
 
-    // Új parkolóhely hozzáadása
-    document.getElementById('add-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const licensePlate = document.getElementById('licensePlate').value;
+        const plate = document.getElementById('licensePlate').value;
         const occupied = document.getElementById('occupied').checked;
 
         fetch('/api/spots', {
@@ -53,17 +48,19 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                licensePlate,
-                occupied
-            })
+            body: JSON.stringify({ licensePlate: plate, occupied: occupied })
         })
-        .then(res => res.json())
-        .then(() => {
-            document.getElementById('add-form').reset();
-            fetchSpots();
+        .then(response => {
+            if (response.ok) {
+                loadSpots();
+                document.getElementById('add-form').reset();
+            } else {
+                alert('Hiba történt a hozzáadáskor!');
+            }
         });
     });
+
+    loadSpots();
 </script>
 </body>
 </html>
