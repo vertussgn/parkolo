@@ -10,12 +10,16 @@ public class ParkingSpot {
     private Long id;
 
     private String licensePlate;
+    private String carType;
+    private String color;
     private boolean occupied;
 
     public ParkingSpot() {}
 
-    public ParkingSpot(String licensePlate, boolean occupied) {
+    public ParkingSpot(String licensePlate, String carType, String color, boolean occupied) {
         this.licensePlate = licensePlate;
+        this.carType = carType;
+        this.color = color;
         this.occupied = occupied;
     }
 
@@ -29,6 +33,22 @@ public class ParkingSpot {
 
     public void setLicensePlate(String licensePlate) {
         this.licensePlate = licensePlate;
+    }
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public boolean isOccupied() {
