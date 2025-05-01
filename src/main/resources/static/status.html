@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Parkoló állapota</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            padding: 2rem;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .spot {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .occupied {
+            color: red;
+            font-weight: bold;
+        }
+
+        .free {
+            color: green;
+            font-weight: bold;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-button button {
+            padding: 0.7rem 1.2rem;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .back-button button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>Parkolóhelyek állapota</h1>
+<div id="status-list"></div>
+
+<div class="back-button">
+    <button onclick="window.location.href='index.html'">⬅️ Vissza a főoldalra</button>
+</div>
+
+<script>
+    fetch('/api/spots')
+        .then(response => response.json())
+        .then(spots => {
+            const list = document.getElementById('status-list');
+            spots.forEach(spot => {
+                const div = document.createElement('div');
+                div.className = 'spot';
+                div.innerHTML = `
+                    <span>Rendszám: <strong>${spot.licensePlate || 'N/A'}</strong></span>
+                    <span class="${spot.occupied ? 'occupied' : 'free'}">${spot.occupied ? 'FOGLALT' : 'SZABAD'}</span>
+                `;
+                list.appendChild(div);
+            });
+        })
+        .catch(error => {
+            document.getElementById('status-list').textContent = 'Nem sikerült betölteni az adatokat.';
+            console.error('Hiba:', error);
+        });
+</script>
+</body>
+</html>

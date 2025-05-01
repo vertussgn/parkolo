@@ -3,40 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>Parkoló rendszer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            padding: 2rem;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 1rem;
+        }
+
+        input[type="text"], input[type="checkbox"] {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        button {
+            margin-top: 1.5rem;
+            padding: 0.7rem 1.2rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .link {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h1>Parkoló Helyek</h1>
+<h1>Új autó hozzáadása</h1>
 
-<ul id="spot-list"></ul>
-
-<h2>Új autó hozzáadása</h2>
 <form id="add-form">
     <label for="licensePlate">Rendszám:</label>
     <input type="text" id="licensePlate" name="licensePlate" required>
-    <br>
-    <label for="occupied">Foglalt?</label>
-    <input type="checkbox" id="occupied" name="occupied">
-    <br><br>
+
+    <label>
+        <input type="checkbox" id="occupied" name="occupied">
+        Foglalt?
+    </label>
+
     <button type="submit">Hozzáadás</button>
 </form>
 
-<script>
-    // Összes parkolóhely lekérése
-    function loadSpots() {
-        fetch('/api/spots')
-            .then(response => response.json())
-            .then(data => {
-                const list = document.getElementById('spot-list');
-                list.innerHTML = '';
-                data.forEach(spot => {
-                    const li = document.createElement('li');
-                    li.textContent = `${spot.licensePlate} - ${spot.occupied ? 'Foglalt' : 'Szabad'}`;
-                    list.appendChild(li);
-                });
-            });
-    }
+<div class="link">
+    <a href="status.html">📊 Parkoló állapotának megtekintése</a>
+</div>
 
-    // Új autó hozzáadása
+<script>
     document.getElementById('add-form').addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -45,22 +85,21 @@
 
         fetch('/api/spots', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ licensePlate: plate, occupied: occupied })
         })
         .then(response => {
             if (response.ok) {
-                loadSpots();
+                alert("Sikeresen hozzáadva!");
                 document.getElementById('add-form').reset();
             } else {
-                alert('Hiba történt a hozzáadáskor!');
+                alert("Hiba történt a hozzáadáskor.");
             }
+        })
+        .catch(error => {
+            alert("Hiba: " + error.message);
         });
     });
-
-    loadSpots();
 </script>
 </body>
 </html>
