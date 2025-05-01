@@ -14,6 +14,7 @@
 
         h1 {
             text-align: center;
+            margin-bottom: 1.5rem;
         }
 
         form {
@@ -26,25 +27,48 @@
         label {
             display: block;
             margin-top: 1rem;
+            font-weight: 500;
         }
 
-        input[type="text"], input[type="checkbox"], select {
+        input[type="text"], select {
             margin-top: 0.5rem;
             font-size: 1rem;
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.7rem;
             box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1rem;
         }
 
         button {
             margin-top: 1.5rem;
-            padding: 0.7rem 1.2rem;
+            padding: 0.8rem;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             width: 100%;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0069d9;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
 
         .link {
@@ -55,10 +79,28 @@
         .link a {
             color: #007bff;
             text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .link a:hover {
             text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
         }
     </style>
 </head>
@@ -66,72 +108,186 @@
 <h1>Új autó hozzáadása</h1>
 
 <form id="add-form">
-    <label for="spotNumber">Parkolóhely száma (1-20):</label>
-    <select id="spotNumber" name="spotNumber" required>
-        <option value="">Válasszon parkolóhelyet</option>
-        <!-- JavaScript fogja feltölteni -->
-    </select>
+    <div>
+        <label for="spotNumber">Parkolóhely száma (1-20):</label>
+        <select id="spotNumber" name="spotNumber" required>
+            <option value="">Betöltés...</option>
+        </select>
+        <div id="spotError" class="error-message"></div>
+    </div>
 
-    <label for="licensePlate">Rendszám:</label>
-    <input type="text" id="licensePlate" name="licensePlate" required>
+    <div>
+        <label for="licensePlate">Rendszám:</label>
+        <input type="text" id="licensePlate" name="licensePlate" required placeholder="ABC-123">
+        <div id="plateError" class="error-message"></div>
+    </div>
 
-    <label for="carType">Autó típusa:</label>
-    <input type="text" id="carType" name="carType" required>
+    <div>
+        <label for="carType">Autó típusa:</label>
+        <input type="text" id="carType" name="carType" required placeholder="Pl.: Opel Astra">
+        <div id="typeError" class="error-message"></div>
+    </div>
 
-    <label for="color">Színe:</label>
-    <input type="text" id="color" name="color" required>
+    <div>
+        <label for="color">Színe:</label>
+        <input type="text" id="color" name="color" required placeholder="Pl.: Kék">
+        <div id="colorError" class="error-message"></div>
+    </div>
 
-    <button type="submit">Hozzáadás</button>
+    <button type="submit" id="submitBtn">Hozzáadás</button>
+    <div id="successMessage" class="success-message"></div>
 </form>
 
 <div class="link">
-    <a href="status.html">📊 Parkoló állapotának megtekintése</a>
+    <a href="status.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"></path>
+            <path d="M21 9H3"></path>
+            <path d="M21 15H3"></path>
+            <path d="M12 3v18"></path>
+        </svg>
+        Parkoló állapotának megtekintése
+    </a>
 </div>
 
 <script>
-    // Parkolóhelyek betöltése a legördülő menübe
     document.addEventListener('DOMContentLoaded', function() {
-        const spotSelect = document.getElementById('spotNumber');
+        const form = document.getElementById('add-form');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
 
-        // 1-20-ig generáljuk a parkolóhelyeket
-        for (let i = 1; i <= 20; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i + '. parkolóhely';
-            spotSelect.appendChild(option);
-        }
-    });
+        // Parkolóhelyek betöltése
+        loadParkingSpots();
 
-    document.getElementById('add-form').addEventListener('submit', function (event) {
-        event.preventDefault();
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            submitBtn.disabled = true;
 
-        const plate = document.getElementById('licensePlate').value;
-        const spotNumber = document.getElementById('spotNumber').value;
-        const carType = document.getElementById('carType').value;
-        const color = document.getElementById('color').value;
+            const spotNumber = document.getElementById('spotNumber').value;
+            const plate = document.getElementById('licensePlate').value;
+            const carType = document.getElementById('carType').value;
+            const color = document.getElementById('color').value;
 
-        fetch('/api/spots', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                spotNumber: spotNumber,
-                licensePlate: plate,
-                carType: carType,
-                color: color,
-                occupied: true
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("Sikeresen hozzáadva a " + spotNumber + ". parkolóhelyhez!");
-                document.getElementById('add-form').reset();
-            } else {
-                alert("Hiba történt a hozzáadáskor.");
+            // Validáció
+            if (!validateInputs(spotNumber, plate, carType, color)) {
+                submitBtn.disabled = false;
+                return;
             }
-        })
-        .catch(error => {
-            alert("Hiba: " + error.message);
+
+            fetch('/api/spots', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    spotNumber: parseInt(spotNumber),
+                    licensePlate: plate,
+                    carType: carType,
+                    color: color,
+                    occupied: true
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                return response.json().then(err => { throw new Error(err.message || 'Hiba történt') });
+            })
+            .then(data => {
+                showSuccess(`Sikeresen hozzáadva a ${spotNumber}. parkolóhelyhez!`);
+                form.reset();
+                loadParkingSpots(); // Frissítjük a parkolóhely listát
+            })
+            .catch(error => {
+                showError(error.message);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+            });
         });
+
+        function loadParkingSpots() {
+            fetch('/api/spots')
+                .then(response => response.json())
+                .then(spots => {
+                    const spotSelect = document.getElementById('spotNumber');
+                    spotSelect.innerHTML = '<option value="">Válasszon parkolóhelyet</option>';
+
+                    // 1-20-ig generáljuk a parkolóhelyeket
+                    for (let i = 1; i <= 20; i++) {
+                        const spot = spots.find(s => s.spotNumber === i);
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `${i}. parkolóhely` + (spot && spot.occupied ? ' (FOGLALT)' : ' (SZABAD)');
+                        option.disabled = spot && spot.occupied;
+                        spotSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Hiba a parkolóhelyek betöltésekor:', error);
+                    // Ha nem sikerül, akkor is megjelenítjük az 1-20-ig lehetőségeket
+                    const spotSelect = document.getElementById('spotNumber');
+                    spotSelect.innerHTML = '<option value="">Válasszon parkolóhelyet</option>';
+                    for (let i = 1; i <= 20; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `${i}. parkolóhely`;
+                        spotSelect.appendChild(option);
+                    }
+                });
+        }
+
+        function validateInputs(spotNumber, plate, carType, color) {
+            let isValid = true;
+
+            // Spot number validáció
+            if (!spotNumber || spotNumber < 1 || spotNumber > 20) {
+                document.getElementById('spotError').textContent = 'Érvényes parkolóhely számot válasszon (1-20)';
+                document.getElementById('spotError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('spotError').style.display = 'none';
+            }
+
+            // License plate validáció
+            if (!plate || plate.trim().length < 3) {
+                document.getElementById('plateError').textContent = 'Érvényes rendszámot adjon meg';
+                document.getElementById('plateError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('plateError').style.display = 'none';
+            }
+
+            // Car type validáció
+            if (!carType || carType.trim().length < 2) {
+                document.getElementById('typeError').textContent = 'Adja meg az autó típusát';
+                document.getElementById('typeError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('typeError').style.display = 'none';
+            }
+
+            // Color validáció
+            if (!color || color.trim().length < 2) {
+                document.getElementById('colorError').textContent = 'Adja meg az autó színét';
+                document.getElementById('colorError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('colorError').style.display = 'none';
+            }
+
+            return isValid;
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function showError(message) {
+            alert("Hiba: " + message);
+        }
     });
 </script>
 </body>
