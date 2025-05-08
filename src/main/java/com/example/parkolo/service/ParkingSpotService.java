@@ -2,6 +2,7 @@ package com.example.parkolo.service;
 
 import com.example.parkolo.entity.ParkingSpot;
 import com.example.parkolo.repository.ParkingSpotRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,17 @@ public class ParkingSpotService {
 
     public ParkingSpotService(ParkingSpotRepository repository) {
         this.repository = repository;
+    }
+    @PostConstruct
+    public void initDatabase() {
+        if (repository.count() == 0) {
+            for (int i = 1; i <= 20; i++) {
+                ParkingSpot spot = new ParkingSpot();
+                spot.setSpotNumber(i);
+                spot.setOccupied(false);
+                repository.save(spot);
+            }
+        }
     }
 
     public List<ParkingSpot> getAll() {

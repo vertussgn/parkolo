@@ -136,64 +136,64 @@
         loadParkingSpots();
     }
 
-    function loadParkingSpots() {
-        fetch(`/api/spots${cacheBuster()}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Hálózati hiba történt');
+function loadParkingSpots() {
+    fetch(`/api/spots${cacheBuster()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Hálózati hiba történt');
+            }
+            return response.json();
+        })
+        .then(spots => {
+            updateLastUpdatedTime();
+            const list = document.getElementById('status-list');
+            list.innerHTML = '';
+
+            // Ha nincsenek adatok, jelenítsünk meg üres állapotot
+            if (!spots || spots.length === 0) {
+                list.innerHTML = '<div class="error">Nincsenek parkolóhely adatok</div>';
+                return;
+            }
+
+            // 1-20-ig generáljuk a parkolóhelyeket
+            for (let i = 1; i <= 20; i++) {
+                const spot = spots.find(s => s.spotNumber === i);
+                const div = document.createElement('div');
+                div.className = 'spot';
+
+                if (spot && spot.occupied) {
+                    div.classList.add('occupied');
+                    div.innerHTML = `
+                        <span class="spot-number">${i}. hely</span>
+                        <span class="spot-info">
+                            <span class="occupied-spot">FOGLALT</span>
+                            <div class="car-details">
+                                Rendszám: <strong>${spot.licensePlate || 'Nincs megadva'}</strong><br>
+                                Típus: ${spot.carType || 'Nincs megadva'}<br>
+                                Szín: ${spot.color || 'Nincs megadva'}
+                            </div>
+                        </span>
+                    `;
+                } else {
+                    div.classList.add('free');
+                    div.innerHTML = `
+                        <span class="spot-number">${i}. hely</span>
+                        <span class="spot-info">
+                            <span class="free-spot">SZABAD</span>
+                        </span>
+                    `;
                 }
-                return response.json();
-            })
-            .then(spots => {
-                updateLastUpdatedTime();
-                const list = document.getElementById('status-list');
-                list.innerHTML = '';
 
-                // Ellenőrizzük, hogy van-e adat
-                if (!spots || spots.length === 0) {
-                    list.innerHTML = '<div class="error">Nincsenek parkolóhely adatok</div>';
-                    return;
-                }
-
-                // 1-20-ig generáljuk a parkolóhelyeket
-                for (let i = 1; i <= 20; i++) {
-                    const spot = spots.find(s => s.spotNumber === i);
-                    const div = document.createElement('div');
-                    div.className = 'spot';
-
-                    if (spot && spot.occupied) {
-                        div.classList.add('occupied');
-                        div.innerHTML = `
-                            <span class="spot-number">${i}. hely</span>
-                            <span class="spot-info">
-                                <span class="occupied-spot">FOGLALT</span>
-                                <div class="car-details">
-                                    Rendszám: <strong>${spot.licensePlate || 'Nincs megadva'}</strong><br>
-                                    Típus: ${spot.carType || 'Nincs megadva'}<br>
-                                    Szín: ${spot.color || 'Nincs megadva'}
-                                </div>
-                            </span>
-                        `;
-                    } else {
-                        div.classList.add('free');
-                        div.innerHTML = `
-                            <span class="spot-number">${i}. hely</span>
-                            <span class="spot-info">
-                                <span class="free-spot">SZABAD</span>
-                            </span>
-                        `;
-                    }
-
-                    list.appendChild(div);
-                }
-            })
-            .catch(error => {
-                console.error('Hiba a parkolóállapot lekérdezésekor:', error);
-                document.getElementById('status-list').innerHTML = `
-                    <div class="error">Hiba történt az adatok betöltése közben: ${error.message}</div>
-                `;
-            });
-    }
+                list.appendChild(div);
+            }
+        })
+        .catch(error => {
+            console.error('Hiba a parkolóállapot lekérdezésekor:', error);
+            document.getElementById('status-list').innerHTML = `
+                <div class="error">Hiba történt az adatok betöltése közben: ${error.message}</div>
+            `;
+        });
+}
 
     function updateLastUpdatedTime() {
         const now = new Date();

@@ -9,6 +9,9 @@ public class ParkingSpot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private int spotNumber;
+
     private String licensePlate;
     private String carType;
     private String color;
@@ -16,7 +19,8 @@ public class ParkingSpot {
 
     public ParkingSpot() {}
 
-    public ParkingSpot(String licensePlate, String carType, String color, boolean occupied) {
+    public ParkingSpot(int spotNumber, String licensePlate, String carType, String color, boolean occupied) {
+        this.spotNumber = spotNumber;
         this.licensePlate = licensePlate;
         this.carType = carType;
         this.color = color;
@@ -25,6 +29,14 @@ public class ParkingSpot {
 
     public Long getId() {
         return id;
+    }
+
+    public int getSpotNumber() {
+        return spotNumber;
+    }
+
+    public void setSpotNumber(int spotNumber) {
+        this.spotNumber = spotNumber;
     }
 
     public String getLicensePlate() {
@@ -59,3 +71,4 @@ public class ParkingSpot {
         this.occupied = occupied;
     }
 }
+
