@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="hu" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Parkoló rendszer</title>
+    <link th:href="@{/css/styleadd-car.css}" rel="stylesheet">
+</head>
+<body>
+<h1>Új autó hozzáadása</h1>
+<form id="add-form">
+    <div>
+        <label for="spotNumber">Parkolóhely száma (1-20):</label>
+        <select id="spotNumber" name="spotNumber" required>
+            <option value="">Betöltés...</option>
+        </select>
+        <div id="spotError" class="error-message"></div>
+    </div>
+    <div>
+        <label for="licensePlate">Rendszám:</label>
+        <input type="text" id="licensePlate" name="licensePlate" required placeholder="ABC-123">
+        <div id="plateError" class="error-message"></div>
+    </div>
+    <div>
+        <label for="carType">Autó típusa:</label>
+        <input type="text" id="carType" name="carType" required placeholder="Pl.: Opel Astra">
+        <div id="typeError" class="error-message"></div>
+    </div>
+    <div>
+        <label for="color">Színe:</label>
+        <input type="text" id="color" name="color" required placeholder="Pl.: Kék">
+        <div id="colorError" class="error-message"></div>
+    </div>
+    <button type="submit" id="submitBtn">Hozzáadás</button>
+    <div id="successMessage" class="success-message"></div>
+</form>
+
+<!-- ⬅️ Vissza a főoldalra gomb -->
+<div class="back-button">
+    <button onclick="window.location.href='/'">⬅️ Vissza a főoldalra</button>
+</div>
+
+<div class="link">
+    <a href="/status">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"></path>
+            <path d="M21 9H3"></path>
+            <path d="M21 15H3"></path>
+            <path d="M12 3v18"></path>
+        </svg>
+        Parkoló állapotának megtekintése
+    </a>
+</div>
+
+<script th:src="@{/js/add-car.js}"></script>
+</body>
+</html>

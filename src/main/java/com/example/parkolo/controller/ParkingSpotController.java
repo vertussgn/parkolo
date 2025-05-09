@@ -2,6 +2,7 @@ package com.example.parkolo.controller;
 
 import com.example.parkolo.entity.ParkingSpot;
 import com.example.parkolo.service.ParkingSpotService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +18,6 @@ public class ParkingSpotController {
         this.service = service;
     }
 
-    @GetMapping
-    public List<ParkingSpot> getAll() {
-        return service.getAll();
-    }
 
     @PostMapping
     public ParkingSpot create(@RequestBody ParkingSpot spot) {
@@ -36,4 +33,12 @@ public class ParkingSpotController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+
+    @GetMapping
+    public ResponseEntity<List<ParkingSpot>> getAll() {
+        return ResponseEntity.ok()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .body(service.getAll());
+    }
+
 }

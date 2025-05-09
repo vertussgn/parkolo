@@ -3,8 +3,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const submitBtn = document.getElementById('submitBtn');
     const successMessage = document.getElementById('successMessage');
 
+    // Cache-buster függvény
+    const cacheBuster = () => `?_=${new Date().getTime()}`;
+
     // Parkolóhelyek betöltése
     loadParkingSpots();
+
+    // Automatikus frissítés 5 másodpercenként
+    setInterval(loadParkingSpots, 5000);
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -54,44 +60,56 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    function loadParkingSpots() {
-        fetch('/api/spots')
+    // Törlés utáni frissítés
+    function deleteSpot(id) {
+        if (confirm('Biztosan törölni szeretnéd ezt a parkolóhelyet?')) {
+            fetch(`/api/spots/${id}`, {
+                method: 'DELETE'
+            })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Hálózati hiba történt');
-                }
+                if (!response.ok) throw new Error('Törlés sikertelen');
                 return response.json();
             })
-            .then(spots => {
-                const spotSelect = document.getElementById('spotNumber');
-                spotSelect.innerHTML = '<option value="">Válasszon parkolóhelyet</option>';
-
-                if (!spots || spots.length === 0) {
-                    spotSelect.innerHTML = '<option value="">Nincsenek parkolóhelyek</option>';
-                    return;
-                }
-
-                for (let i = 1; i <= 20; i++) {
-                    const spot = spots.find(s => s.spotNumber === i);
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `${i}. parkolóhely` + (spot && spot.occupied ? ' (FOGLALT)' : ' (SZABAD)');
-                    option.disabled = spot && spot.occupied;
-                    spotSelect.appendChild(option);
-                }
+            .then(() => {
+                loadParkingSpots(); // Frissítjük a listát
             })
-            .catch(error => {
-                console.error('Hiba a parkolóhelyek betöltésekor:', error);
-                const spotSelect = document.getElementById('spotNumber');
-                spotSelect.innerHTML = '<option value="">Hiba a betöltéskor</option>';
-                for (let i = 1; i <= 20; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `${i}. parkolóhely`;
-                    spotSelect.appendChild(option);
-                }
-            });
+            .catch(err => alert("Hiba történt a törlés során."));
+        }
     }
+
+   function loadParkingSpots() {
+       fetch('/api/spots')
+           .then(response => response.json())
+           .then(spots => {
+               const spotSelect = document.getElementById('spotNumber');
+               spotSelect.innerHTML = '<option value="">Válasszon parkolóhelyet</option>';
+
+               // Ha nincsenek adatok, manuálisan generáljuk a parkolóhelyeket
+               if (!spots || spots.length === 0) {
+                   for (let i = 1; i <= 20; i++) {
+                       const option = document.createElement('option');
+                       option.value = i;
+                       option.textContent = `${i}. parkolóhely (SZABAD)`;
+                       spotSelect.appendChild(option);
+                   }
+                   return;
+               }
+
+               // Ellenkező esetben használjuk az API adatokat
+               for (let i = 1; i <= 20; i++) {
+                   const spot = spots.find(s => s.spotNumber === i);
+                   const option = document.createElement('option');
+                   option.value = i;
+                   option.textContent = `${i}. parkolóhely` + (spot && spot.occupied ? ' (FOGLALT)' : ' (SZABAD)');
+                   option.disabled = spot && spot.occupied;
+                   spotSelect.appendChild(option);
+               }
+           })
+           .catch(error => {
+               console.error('Hiba:', error);
+               // Hibakezelés
+           });
+   }
 
     function validateInputs(spotNumber, plate, carType, color) {
         let isValid = true;
