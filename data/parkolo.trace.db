@@ -4679,3 +4679,6 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Dell/De
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 61 more
+2025-05-08 12:45:52.050331+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "DELETE [*]* FROM PARKING_SPOT"; expected "identifier"; SQL statement:
+DELETE * FROM PARKING_SPOT [42001-232]

@@ -2,7 +2,6 @@ package com.example.parkolo.service;
 
 import com.example.parkolo.entity.ParkingSpot;
 import com.example.parkolo.repository.ParkingSpotRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +14,6 @@ public class ParkingSpotService {
     public ParkingSpotService(ParkingSpotRepository repository) {
         this.repository = repository;
     }
-    @PostConstruct
-    public void initDatabase() {
-        if (repository.count() == 0) {
-            for (int i = 1; i <= 20; i++) {
-                ParkingSpot spot = new ParkingSpot();
-                spot.setSpotNumber(i);
-                spot.setOccupied(false);
-                repository.save(spot);
-            }
-        }
-    }
 
     public List<ParkingSpot> getAll() {
         return repository.findAll();
@@ -35,15 +23,19 @@ public class ParkingSpotService {
         return repository.save(spot);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public ParkingSpot update(Long id, ParkingSpot updatedSpot) {
+        return repository.findById(id)
+                .map(existing -> {
+                    existing.setLicensePlate(updatedSpot.getLicensePlate());
+                    existing.setCarType(updatedSpot.getCarType());
+                    existing.setColor(updatedSpot.getColor());
+                    existing.setOccupied(updatedSpot.isOccupied());
+                    return repository.save(existing);
+                })
+                .orElseThrow(() -> new RuntimeException("Parkolóhely nem található ID alapján: " + id));
     }
 
-    public ParkingSpot update(Long id, ParkingSpot updated) {
-        return repository.findById(id).map(existing -> {
-            existing.setLicensePlate(updated.getLicensePlate());
-            existing.setOccupied(updated.isOccupied());
-            return repository.save(existing);
-        }).orElseThrow();
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }

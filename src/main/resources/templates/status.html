@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Parkoló állapota</title>
+    <link th:href="@{/css/styleparking.css}" rel="stylesheet">
+</head>
+<body>
+<h1>Parkolóhelyek állapota (1-20)</h1>
+<div id="last-updated" class="last-updated">
+    Utoljára frissítve: <span id="update-time"></span>
+    <button class="refresh-btn" onclick="forceRefresh()">⟳ Kényszerített frissítés</button>
+</div>
+<div id="status-list"></div>
+
+<div class="back-button">
+    <button onclick="window.location.href='/parking'">⬅️ Vissza a főoldalra</button>
+</div>
+
+<!-- Szerkesztő Modal -->
+<div id="edit-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeEditModal()">×</span>
+        <h2>Parkolóhely szerkesztése</h2>
+        <form id="edit-form">
+            <input type="hidden" id="edit-id">
+
+            <label for="edit-licensePlate">Rendszám:</label>
+            <input type="text" id="edit-licensePlate" name="licensePlate"><br>
+
+            <label for="edit-carType">Autó típusa:</label>
+            <input type="text" id="edit-carType" name="carType"><br>
+
+            <label for="edit-color">Szín:</label>
+            <input type="text" id="edit-color" name="color"><br>
+
+            <label for="edit-occupied">Állapot:</label>
+            <select id="edit-occupied" name="occupied">
+                <option value="true">Foglalt</option>
+                <option value="false">Szabad</option>
+            </select><br>
+
+            <button type="submit">Mentés</button>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/parking.js}"></script>
+</body>
+</html>
