@@ -1,51 +1,170 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="hu">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Parkoló állapota</title>
-    <link th:href="@{/css/styleparking.css}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkoló Rendszer - Állapot</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/styleparking.css}">
 </head>
 <body>
-<h1>Parkolóhelyek állapota (1-20)</h1>
-<div id="last-updated" class="last-updated">
-    Utoljára frissítve: <span id="update-time"></span>
-    <button class="refresh-btn" onclick="forceRefresh()">⟳ Kényszerített frissítés</button>
+<div class="container">
+    <header>
+        <h1>Parkoló Rendszer</h1>
+        <nav>
+            <ul>
+                <li><a th:href="@{/}">Főoldal</a></li>
+                <li><a th:href="@{/status}" class="active">Parkoló állapota</a></li>
+                <li><a th:href="@{/addcar}">Autó hozzáadása</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="status-header">
+            <h2>Parkolóhelyek állapota</h2>
+            <div class="update-info">
+                <button th:onclick="forceRefresh()" class="refresh-btn">Frissítés</button>
+                <span>Utolsó frissítés: <span id="update-time" th:text="${#temporals.format(#temporals.createNow(), 'HH:mm:ss')}"></span></span>
+            </div>
+        </div>
+
+        <div id="status-list" class="parking-spots">
+            <!-- Ez a rész Thymeleaf-fel lesz feltöltve a szerver oldalon -->
+            <div th:each="spot : ${parkingSpots}" th:class="${spot.occupied ? 'spot occupied' : 'spot free'}">
+                <span class="spot-number" th:text="${spot.spotNumber} + '. hely'"></span>
+                <span class="spot-info">
+                        <span th:if="${spot.occupied}" class="occupied-spot">FOGLALT</span>
+                        <span th:unless="${spot.occupied}" class="free-spot">SZABAD</span>
+
+                        <div th:if="${spot.occupied}" class="car-details">
+                            Rendszám: <strong th:text="${spot.licensePlate ?: 'Nincs megadva'}"></strong><br>
+                            Típus: <span th:text="${spot.carType ?: 'Nincs megadva'}"></span><br>
+                            Szín: <span th:text="${spot.color ?: 'Nincs megadva'}"></span>
+                        </div>
+
+                        <div th:if="${spot.occupied}" class="action-buttons">
+                            <button class="action-btn edit-btn" th:onclick="'editSpot(' + ${spot.id} + ')'">Szerkesztés</button>
+                            <button class="action-btn delete-btn" th:onclick="'deleteSpot(' + ${spot.id} + ')'">Törlés</button>
+                        </div>
+                    </span>
+            </div>
+        </div>
+
+        <!-- Szerkesztés modal ablak -->
+        <div id="edit-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <h3>Parkolóhely szerkesztése</h3>
+
+                <form id="edit-form" method="post">
+                    <input type="hidden" id="edit-id" name="id">
+
+                    <div class="form-group">
+                        <label for="edit-licensePlate">Rendszám:</label>
+                        <input type="text" id="edit-licensePlate" name="licensePlate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-carType">Autó típusa:</label>
+                        <input type="text" id="edit-carType" name="carType">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-color">Szín:</label>
+                        <input type="text" id="edit-color" name="color">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-occupied">Foglalt:</label>
+                        <select id="edit-occupied" name="occupied">
+                            <option value="true">Igen</option>
+                            <option value="false">Nem</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Mentés</button>
+                        <button type="button" class="btn cancel" onclick="closeEditModal()">Mégse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Parkoló Rendszer - Minden jog fenntartva</p>
+    </footer>
 </div>
-<div id="status-list"></div>
 
-<!-- ⬅️ Vissza a főoldalra gomb -->
-<div class="back-button">
-    <button onclick="window.location.href='/'">⬅️ Vissza a főoldalra</button>
-</div>
+<script th:inline="javascript">
+    // Ez a minimális JavaScript kód marad a kliens oldalon
+    function forceRefresh() {
+        console.log("Kényszerített frissítés...");
+        window.location.reload();
+    }
 
-<!-- Szerkesztő Modal -->
-<div id="edit-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeEditModal()">×</span>
-        <h2>Parkolóhely szerkesztése</h2>
-        <form id="edit-form">
-            <input type="hidden" id="edit-id">
+    function editSpot(id) {
+        fetch(`/api/spots/${id}`)
+            .then(response => response.json())
+            .then(spot => {
+                document.getElementById('edit-id').value = spot.id;
+                document.getElementById('edit-licensePlate').value = spot.licensePlate || '';
+                document.getElementById('edit-carType').value = spot.carType || '';
+                document.getElementById('edit-color').value = spot.color || '';
+                document.getElementById('edit-occupied').value = spot.occupied;
 
-            <label for="edit-licensePlate">Rendszám:</label>
-            <input type="text" id="edit-licensePlate" name="licensePlate"><br>
+                document.getElementById('edit-modal').style.display = 'block';
+            })
+            .catch(err => alert("Hiba történt az adat betöltése során."));
+    }
 
-            <label for="edit-carType">Autó típusa:</label>
-            <input type="text" id="edit-carType" name="carType"><br>
+    function closeEditModal() {
+        document.getElementById('edit-modal').style.display = 'none';
+    }
 
-            <label for="edit-color">Szín:</label>
-            <input type="text" id="edit-color" name="color"><br>
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-            <label for="edit-occupied">Állapot:</label>
-            <select id="edit-occupied" name="occupied">
-                <option value="true">Foglalt</option>
-                <option value="false">Szabad</option>
-            </select><br>
+        const id = document.getElementById('edit-id').value;
+        const updatedData = {
+            licensePlate: document.getElementById('edit-licensePlate').value,
+            carType: document.getElementById('edit-carType').value,
+            color: document.getElementById('edit-color').value,
+            occupied: document.getElementById('edit-occupied').value === 'true'
+        };
 
-            <button type="submit">Mentés</button>
-        </form>
-    </div>
-</div>
+        fetch(`/api/spots/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Sikertelen mentés');
+            return response.json();
+        })
+        .then(() => {
+            closeEditModal();
+            window.location.reload(); // Oldal újratöltése
+        })
+        .catch(err => alert("Hiba történt a mentés során: " + err.message));
+    });
 
-<script th:src="@{/js/parking.js}"></script>
+    function deleteSpot(id) {
+        if (confirm('Biztosan törölni szeretnéd ezt a parkolóhelyet?')) {
+            fetch(`/api/spots/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Törlés sikertelen');
+                window.location.reload(); // Oldal újratöltése
+            })
+            .catch(error => {
+                console.error('Törlés hiba:', error);
+                alert(`Hiba történt a törlés során: ${error.message}`);
+            });
+        }
+    }
+</script>
 </body>
 </html>

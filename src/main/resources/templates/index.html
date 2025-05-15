@@ -1,21 +1,48 @@
 <!DOCTYPE html>
-<html lang="hu" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Parkoló</title>
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkoló Rendszer - Főoldal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="home-container">
-    <h1 class="main-title">Parkoló</h1>
-    <div class="button-group">
-        <a th:href="@{/add-car}">
-            <button>Autó hozzáadása</button>
-        </a>
-        <a th:href="@{/status}">
-            <button>Parkolóhelyek</button>
-        </a>
-    </div>
+<div class="container">
+    <header>
+        <h1>Parkoló Rendszer</h1>
+        <nav>
+            <ul>
+                <li><a th:href="@{/}" class="active">Főoldal</a></li>
+                <li><a th:href="@{/status}">Parkoló állapota</a></li>
+                <li><a th:href="@{/addcar}">Autó hozzáadása</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="welcome-box">
+            <h2>Üdvözöljük a Parkoló Rendszerben!</h2>
+            <p>Válasszon a fenti menüpontok közül:</p>
+
+            <div class="menu-boxes">
+                <div class="menu-box">
+                    <h3>Parkoló állapota</h3>
+                    <p>Tekintse meg a parkolóhelyek aktuális foglaltságát</p>
+                    <a th:href="@{/status}" class="btn">Megtekintés</a>
+                </div>
+
+                <div class="menu-box">
+                    <h3>Autó hozzáadása</h3>
+                    <p>Új autó rögzítése a rendszerben</p>
+                    <a th:href="@{/addcar}" class="btn">Hozzáadás</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Parkoló Rendszer - Minden jog fenntartva</p>
+    </footer>
 </div>
 </body>
 </html>

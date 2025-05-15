@@ -1,23 +1,49 @@
 package com.example.parkolo.controller;
 
+import com.example.parkolo.entity.ParkingSpot;
+import com.example.parkolo.service.ParkingSpotService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Controller
 public class ViewController {
 
-    @GetMapping("/")
-    public String showHomePage() {
-        return "index"; // templates/index.html
+    private final ParkingSpotService parkingSpotService;
+
+    @Autowired
+    public ViewController(ParkingSpotService parkingSpotService) {
+        this.parkingSpotService = parkingSpotService;
     }
 
-    @GetMapping("/add-car")
-    public String showAddCarPage() {
-        return "add-car"; // templates/add-car.html
+    @GetMapping("/")
+    public String index() {
+        return "index";
     }
 
     @GetMapping("/status")
-    public String showStatusPage() {
-        return "status"; // templates/status.html
+    public String status(Model model) {
+        List<ParkingSpot> parkingSpots = parkingSpotService.getAllParkingSpots();
+        model.addAttribute("parkingSpots", parkingSpots);
+        return "status";
+    }
+
+    @GetMapping("/addcar")
+    public String addCar(Model model) {
+        List<ParkingSpot> parkingSpots = parkingSpotService.getAllParkingSpots();
+
+        long freeCount = parkingSpots.stream().filter(spot -> !spot.getOccupied()).count();
+        long occupiedCount = parkingSpots.stream().filter(ParkingSpot::getOccupied).count();
+        long totalCount = parkingSpots.size();
+
+        model.addAttribute("parkingSpots", parkingSpots);
+        model.addAttribute("freeCount", freeCount);
+        model.addAttribute("occupiedCount", occupiedCount);
+        model.addAttribute("totalCount", totalCount);
+
+        return "add-car";
     }
 }
