@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> {
+public interface ParkingSpotRepository
+        extends JpaRepository<ParkingSpot, Long> {
 
     Optional<ParkingSpot> findBySpotNumber(Integer spotNumber);
 

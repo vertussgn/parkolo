@@ -16,22 +16,22 @@ import java.util.stream.IntStream;
 @Service
 public class ParkingSpotService {
 
+    private static final int MAX_PARKING_SPOTS = 20;
     private final ParkingSpotRepository parkingSpotRepository;
     private final ParkingEventRepository parkingEventRepository;
 
     @Autowired
     public ParkingSpotService(
-            ParkingSpotRepository parkingSpotRepository,
-            ParkingEventRepository parkingEventRepository) {
-        this.parkingSpotRepository = parkingSpotRepository;
-        this.parkingEventRepository = parkingEventRepository;
+            ParkingSpotRepository aParkingSpotRepository, // Paraméter átnevezve
+            ParkingEventRepository aParkingEventRepository) {
+        this.parkingSpotRepository = aParkingSpotRepository;
+        this.parkingEventRepository = aParkingEventRepository;
     }
 
-    // Alkalmazás indításakor inicializáljuk a parkolóhelyeket, ha még nem léteznek
     @PostConstruct
     public void initializeParkingSpots() {
         if (parkingSpotRepository.count() == 0) {
-            IntStream.rangeClosed(1, 20)
+            IntStream.rangeClosed(1, MAX_PARKING_SPOTS)
                     .forEach(i -> {
                         ParkingSpot spot = new ParkingSpot();
                         spot.setSpotNumber(i);
@@ -54,17 +54,22 @@ public class ParkingSpotService {
     }
 
     @Transactional
-    public ParkingSpot addCar(Integer spotNumber, String licensePlate, String carType, String color) {
-        Optional<ParkingSpot> spotOptional = parkingSpotRepository.findBySpotNumber(spotNumber);
+    public ParkingSpot addCar(
+            Integer spotNumber, String licensePlate,
+             String carType, String color) {
+        Optional<ParkingSpot> spotOptional
+                = parkingSpotRepository.findBySpotNumber(spotNumber);
 
         if (spotOptional.isEmpty()) {
-            throw new IllegalArgumentException("Nem létező parkolóhely: " + spotNumber);
+            throw new IllegalArgumentException(
+                    "Nem létező parkolóhely: " + spotNumber);
         }
 
         ParkingSpot spot = spotOptional.get();
 
         if (spot.getOccupied()) {
-            throw new IllegalStateException("A parkolóhely már foglalt: " + spotNumber);
+            throw new IllegalStateException(
+                    "A parkolóhely már foglalt: " + spotNumber);
         }
 
         // Autó hozzáadása
@@ -84,10 +89,12 @@ public class ParkingSpotService {
 
     @Transactional
     public ParkingSpot updateParkingSpot(Long id, ParkingSpot updatedSpot) {
-        Optional<ParkingSpot> spotOptional = parkingSpotRepository.findById(id);
+        Optional<ParkingSpot> spotOptional
+                = parkingSpotRepository.findById(id);
 
         if (spotOptional.isEmpty()) {
-            throw new IllegalArgumentException("Nem létező parkolóhely (id): " + id);
+            throw new IllegalArgumentException(
+                    "Nem létező parkolóhely (id): " + id);
         }
 
         ParkingSpot existingSpot = spotOptional.get();
@@ -120,10 +127,12 @@ public class ParkingSpotService {
 
     @Transactional
     public void deleteParkingSpot(Long id) {
-        Optional<ParkingSpot> spotOptional = parkingSpotRepository.findById(id);
+        Optional<ParkingSpot> spotOptional
+                = parkingSpotRepository.findById(id);
 
         if (spotOptional.isEmpty()) {
-            throw new IllegalArgumentException("Nem létező parkolóhely (id): " + id);
+            throw new IllegalArgumentException(
+                    "Nem létező parkolóhely (id): " + id);
         }
 
         ParkingSpot spot = spotOptional.get();

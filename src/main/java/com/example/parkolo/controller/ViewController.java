@@ -15,8 +15,9 @@ public class ViewController {
     private final ParkingSpotService parkingSpotService;
 
     @Autowired
-    public ViewController(ParkingSpotService parkingSpotService) {
-        this.parkingSpotService = parkingSpotService;
+    public ViewController(ParkingSpotService
+                                      parkingSpotServiceParam) {
+        this.parkingSpotService = parkingSpotServiceParam;
     }
 
     @GetMapping("/")
@@ -26,17 +27,22 @@ public class ViewController {
 
     @GetMapping("/status")
     public String status(Model model) {
-        List<ParkingSpot> parkingSpots = parkingSpotService.getAllParkingSpots();
+        List<ParkingSpot> parkingSpots
+                = parkingSpotService.getAllParkingSpots();
         model.addAttribute("parkingSpots", parkingSpots);
         return "status";
     }
 
     @GetMapping("/addcar")
     public String addCar(Model model) {
-        List<ParkingSpot> parkingSpots = parkingSpotService.getAllParkingSpots();
+        List<ParkingSpot> parkingSpots
+                = parkingSpotService.getAllParkingSpots();
 
-        long freeCount = parkingSpots.stream().filter(spot -> !spot.getOccupied()).count();
-        long occupiedCount = parkingSpots.stream().filter(ParkingSpot::getOccupied).count();
+        long freeCount = parkingSpots.stream().filter(spot
+                -> !spot.getOccupied()).count();
+        long occupiedCount
+                = parkingSpots.stream().filter(
+                        ParkingSpot::getOccupied).count();
         long totalCount = parkingSpots.size();
 
         model.addAttribute("parkingSpots", parkingSpots);

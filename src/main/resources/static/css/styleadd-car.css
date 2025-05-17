@@ -1,99 +1,175 @@
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f4f4;
-    padding: 2rem;
-    max-width: 600px;
-    margin: auto;
+/* Add Car Page Styles */
+
+/* Form container styling */
+.form-container {
+    background-color: white;
+    border-radius: 5px;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
-h1 {
+.form-container h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
     text-align: center;
-    margin-bottom: 1.5rem;
 }
 
-form {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+/* Form group styling */
+.form-group {
+    margin-bottom: 20px;
 }
 
-label {
+.form-group label {
     display: block;
-    margin-top: 1rem;
+    margin-bottom: 8px;
     font-weight: 500;
+    color: #34495e;
 }
 
-input[type="text"],
-select {
-    margin-top: 0.5rem;
-    font-size: 1rem;
+.form-group input,
+.form-group select {
     width: 100%;
-    padding: 0.7rem;
-    box-sizing: border-box;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
 }
 
-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.7rem center;
-    background-size: 1rem;
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-button {
-    margin-top: 1.5rem;
-    padding: 0.8rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s;
+/* Form action buttons */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
 }
 
-button:hover {
-    background-color: #0069d9;
+.form-actions .btn {
+    min-width: 120px;
 }
 
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-.link {
-    margin-top: 2rem;
+/* Success and error message styling */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
     text-align: center;
-}
-
-.link a {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.link a:hover {
-    text-decoration: underline;
+    animation: fadeIn 0.3s;
 }
 
 .error-message {
-    color: #dc3545;
-    font-size: 0.9rem;
-    margin-top: 0.3rem;
-    display: none;
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+    animation: fadeIn 0.3s;
 }
 
-.success-message {
-    color: #28a745;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Current status section */
+.current-status {
+    background-color: white;
+    border-radius: 5px;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.current-status h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
     text-align: center;
-    margin-top: 1rem;
-    display: none;
+}
+
+.status-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    min-width: 120px;
+}
+
+.status-item span {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+}
+
+.status-item strong {
+    font-size: 1.8rem;
+    color: #2c3e50;
+}
+
+/* Status colors */
+.status-item:nth-child(1) strong {
+    color: #2ecc71; /* Green for free spots */
+}
+
+.status-item:nth-child(2) strong {
+    color: #e74c3c; /* Red for occupied spots */
+}
+
+/* View button */
+.view-btn {
+    display: block;
+    width: 200px;
+    margin: 20px auto 0;
+}
+
+/* Disabled button state */
+.btn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-container,
+    .current-status {
+        padding: 15px;
+    }
+
+    .status-summary {
+        flex-direction: column;
+    }
+
+    .status-item {
+        padding: 10px;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .status-item span {
+        margin-bottom: 0;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }

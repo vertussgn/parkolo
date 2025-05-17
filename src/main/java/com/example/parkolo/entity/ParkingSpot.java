@@ -1,6 +1,11 @@
 package com.example.parkolo.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
+import jakarta.persistence.GenerationType;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,8 +40,8 @@ public class ParkingSpot {
         this.lastUpdated = LocalDateTime.now();
     }
 
-    public ParkingSpot(Integer spotNumber) {
-        this.spotNumber = spotNumber;
+    public ParkingSpot(Integer aSpotNumber) { // Paraméter átnevezve
+        this.spotNumber = aSpotNumber;
         this.occupied = false;
         this.lastUpdated = LocalDateTime.now();
     }
@@ -46,24 +51,24 @@ public class ParkingSpot {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long aId) { // Paraméter átnevezve
+        this.id = aId;
     }
 
     public Integer getSpotNumber() {
         return spotNumber;
     }
 
-    public void setSpotNumber(Integer spotNumber) {
-        this.spotNumber = spotNumber;
+    public void setSpotNumber(Integer aSpotNumber) { // Paraméter átnevezve
+        this.spotNumber = aSpotNumber;
     }
 
     public String getLicensePlate() {
         return licensePlate;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public void setLicensePlate(String aLicensePlate) { // Paraméter átnevezve
+        this.licensePlate = aLicensePlate;
         this.lastUpdated = LocalDateTime.now();
     }
 
@@ -71,8 +76,8 @@ public class ParkingSpot {
         return carType;
     }
 
-    public void setCarType(String carType) {
-        this.carType = carType;
+    public void setCarType(String aCarType) { // Paraméter átnevezve
+        this.carType = aCarType;
         this.lastUpdated = LocalDateTime.now();
     }
 
@@ -80,8 +85,8 @@ public class ParkingSpot {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setColor(String aColor) { // Paraméter átnevezve
+        this.color = aColor;
         this.lastUpdated = LocalDateTime.now();
     }
 
@@ -89,8 +94,8 @@ public class ParkingSpot {
         return occupied;
     }
 
-    public void setOccupied(Boolean occupied) {
-        this.occupied = occupied;
+    public void setOccupied(Boolean aOccupied) { // Paraméter átnevezve
+        this.occupied = aOccupied;
         this.lastUpdated = LocalDateTime.now();
     }
 
@@ -98,20 +103,20 @@ public class ParkingSpot {
         return lastUpdated;
     }
 
-    public void setLastUpdated(LocalDateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setLastUpdated(LocalDateTime aLastUpdated) {
+        this.lastUpdated = aLastUpdated;
     }
 
     @Override
     public String toString() {
-        return "ParkingSpot{" +
-                "id=" + id +
-                ", spotNumber=" + spotNumber +
-                ", licensePlate='" + licensePlate + '\'' +
-                ", carType='" + carType + '\'' +
-                ", color='" + color + '\'' +
-                ", occupied=" + occupied +
-                ", lastUpdated=" + lastUpdated +
-                '}';
+        return "ParkingSpot{"
+                + "id=" + id
+                + ", spotNumber=" + spotNumber
+                + ", licensePlate='" + licensePlate
+                + '\'' + ", carType='" + carType + '\''
+                + ", color='" + color + '\''
+                + ", occupied=" + occupied
+                + ", lastUpdated=" + lastUpdated
+                + '}';
     }
 }
