@@ -1,4 +1,4 @@
-package com.example.parkolo;
+package com.example.parkolo.EntityTests;
 
 import com.example.parkolo.entity.ParkingSpot;
 import org.junit.jupiter.api.BeforeEach;

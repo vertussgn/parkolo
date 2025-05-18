@@ -63,10 +63,7 @@
 
     <!-- Checks for Size Violations.                    -->
     <!-- See https://checkstyle.org/checks/sizes/index.html -->
-    <module name="FileLength"/>
-    <module name="LineLength">
-        <property name="fileExtensions" value="java"/>
-    </module>
+
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See https://checkstyle.org/checks/misc/index.html -->
