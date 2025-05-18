@@ -30,13 +30,6 @@ jobs:
           name: parkolo-jar
           path: target/parkolo-*.jar
 
-      - name: Upload Jacoco HTML report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-report
-          path: target/site/jacoco
-
       - name: Upload Checkstyle report
         if: always()
         uses: actions/upload-artifact@v4
