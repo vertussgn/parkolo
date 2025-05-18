@@ -12,27 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Repository klónozása
+        uses: actions/checkout@v3
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Java 21 beállítása
+        uses: actions/setup-java@v3
         with:
-          java-version: '21'
           distribution: 'temurin'
+          java-version: '21'
 
-      - name: Build with Maven
+      - name: Maven cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Build és tesztek futtatása Maven-nel
         run: mvn clean verify
 
-      - name: Upload JAR artifact
+      - name: Jacoco kódlefedettségi riport mentése (ha van)
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: parkolo-jar
-          path: target/parkolo-*.jar
-
-      - name: Upload Checkstyle report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkstyle-report
-          path: target/checkstyle-result.xml
+          name: jacoco-report
+          path: target/site/jacoco
