@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Column;
 import java.time.LocalDateTime;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "parking_events")
 public class ParkingEvent {
